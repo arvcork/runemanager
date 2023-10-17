@@ -5,11 +5,14 @@
       "forceConsistentCasingInFileNames": true,
       "lib": ["esnext"],
       "module": "CommonJS",
+      "strictNullChecks": true,
       "moduleResolution": "node",
       "outDir": "dist",
       "skipLibCheck": true,
       "sourceMap": true,
       "target": "es2016",
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": true,
       "types": ["node"]
     },
     "exclude": ["node_modules", "dist", "__tests__"]

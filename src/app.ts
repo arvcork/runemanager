@@ -1,34 +1,26 @@
-import express, { Express } from 'express';
-import env from './env';
+import 'reflect-metadata';
+import path, { resolve } from 'path';
+import pino from 'pino';
+import configure from './config';
+import fastify from 'fastify';
+import { bootstrap } from 'fastify-decorators';
 
-class Application {
-    express: Express;
+configure(path.join(__dirname, '..', '.env'));
 
-    constructor() {
-        this.express = express();
+export default () => {
+    const app = fastify({
+        logger: pino({ level: 'info' })
+    });
 
-        this.initialiseMiddleware();
-        this.registerRoutes();
-    }
+    app.decorateRequest('player', null);
 
-    protected initialiseMiddleware() {
-        this.express.use(express.json());
-        this.express.use(express.urlencoded({ extended: true }));
-    }
+    app.register(bootstrap, {
+        directory: resolve(__dirname, 'controllers'),
+        mask: /\.controller\./
+    })
 
-    protected registerRoutes() {
-        this.express.use('/', (req, res) => {
-            return res.send({
-                test: true
-            });
-        })
-    }
+    app.register(require('@fastify/cors'));
+    app.register(require('@fastify/helmet'));
 
-    public serve() {
-        this.express.listen(env.API_PORT || 5000, () => {
-            console.log('Server running.');
-        })
-    }
+    return app;
 }
-
-export default new Application();
